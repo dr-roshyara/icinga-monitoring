@@ -1,0 +1,69 @@
+ 	- Links 
+		○ https://github.com/jpfluger/examples/blob/master/ubuntu-14.04/icinga2-server.md
+		○ https://computingforgeeks.com/install-icinga2-monitoring-tool-on-ubuntu-linux/
+
+	- Theory
+		○ incinga 2  is monitoring tool 
+		○ icinga web 2  is on the top of icinga 2 to view or to monitor on browser about what is happening under the hood
+		
+		
+	- what I did 
+		○  sudo apt-get install curl gpg wget apt-transport-https
+		Aus <https://sleeplessbeastie.eu/2018/01/15/how-to-install-icinga2-and-icingaweb2/> 
+		○ install vim 
+		 apt-get install vim 
+		○ Install loacte 
+		  apt-get install locate 
+		○ install icinga2 
+		  apt install icinga2
+		# optional 
+		icinga2 daemon -C
+		Aus <https://icinga.com/docs/icinga-2/latest/doc/02-installation/02-Ubuntu/> 
+	- Plugins 
+		 Without plugins Icinga 2 does not know how to check external services.  You need to install monitoring  plugins so that  you can check whether the services are working properly . 
+		apt install monitoring-plugins
+		Aus <https://icinga.com/docs/icinga-2/latest/doc/02-installation/02-Ubuntu/> 
+		- verify service status 
+		 sudo systemctl status icinga2 
+		Aus <https://sleeplessbeastie.eu/2018/01/15/how-to-install-icinga2-and-icingaweb2/> 
+		- Enable the incinga service 2 
+		sudo systemctl enable --now icinga2
+	
+	- List the features of icinga 
+	   sudo icinga2 feature list
+		○ If you are using for the first time you can see something like following 
+		disabled features:  
+		api command compatlog debuglog elasticsearch gelf graphite icingadb influxdb influxdb2 livestatus opentsdb perfdata statusdata syslog
+		Enabled features: checker mainlog notification
+		○ If you are in  a system where icinga is already installed and you want to check then you may see something like 
+		Disabled features: compatlog debuglog elasticsearch gelf graphite icingadb influxdb influxdb2 livestatus opentsdb perfdata statusdata syslog
+		Enabled features: api checker command ido-mysql mainlog notification
+  	    curl -s https://packages.icinga.com/icinga.key | sudo apt-key add -	
+	    From 
+		https://sleeplessbeastie.eu/2018/01/15/how-to-install-icinga2-and-icingaweb2/ 
+	
+	- Install web interface 
+		○ Install postgresql 
+		sudo apt-get install postgresql 
+		○ Create the user and password for DB IDO (Database Icinga Data Output) module.
+		sudo -u postgres 
+		psql -c "CREATE ROLE icinga_ido WITH LOGIN PASSWORD 'icinga_ido_password' " 
+		createdb -O icinga_ido -E UTF8 icinga_ido
+		○ careate database authnication user for icinga_ido 
+			§ open the follwoing pg_hba.conf file with vi command 
+			vi /etc/postgresql/14/main/pg_hba.conf 
+			§ add a line for icinga_ido as follwoing 
+			# Database administrative login by Unix domain socket
+			local   all             postgres                                peer
+			# TYPE  DATABASE        USER            ADDRESS                 METHOD
+			# "local" is for Unix domain socket connections only
+			local   all             all                                     peer
+			# IPv4 local connections:
+			host    all             all             127.0.0.1/32            scram-sha-256
+			host    icinga_ido      icinga_ido      127.0.0.1/32            md5
+		○ Reload postgresql 
+		  sudo -u postgres psql -c "SELECT pg_reload_conf()"
+		○ 
+		○ postgresql table in icinga web 2 
+		icinga2/pgsql.sql at master · Icinga/icinga2 · GitHub
+		
